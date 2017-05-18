@@ -180,6 +180,7 @@ def upload_video(args):
   return ""
 
 def authenticate():
+  args = {}
   args['logging_level'] = "INFO"
   args['auth_host_name'] = 'localhost'
   args['noauth_local_webserver'] = True

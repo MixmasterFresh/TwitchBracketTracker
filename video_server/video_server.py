@@ -2,7 +2,7 @@ from flask import Flask, Response, redirect, url_for, request, session, abort, r
 from flask import g
 from concurrent.futures import ThreadPoolExecutor
 from livestreamer import Livestreamer
-import base64, M2Crypto
+import random
 import os
 import upload
 
@@ -28,7 +28,7 @@ def get_status(id, status):
     procs[id].status
 
 def make_random_key():
-    return str(base64.b64encode(M2Crypto.m2.rand_bytes(32)))
+    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(32))
 
 def notify_tournament(attrs, video_id):
     data = {'video': video_id}

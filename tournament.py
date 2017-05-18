@@ -148,7 +148,7 @@ def start_recording(id):
             'description': description,
             'tournament_name': config.NAME,
             'stream': config.TWITCH_STREAM,
-            'auth': config.VIDEO_SERVER_CREDENTIAL
+            'auth': config.VIDEO_SERVER_CREDENTIAL,
             'return_url': request.url_root + '/admin/video/' + str(match.id)
         }
         req = urllib2.Request(config.VIDEO_SERVER_ADDRESS + '/start')
@@ -167,7 +167,7 @@ def stop_recording(id):
     try:
         #get various parameters
         match = db.get_match(id)
-        if (not match.live) or (match.key = ""):
+        if (not match.live) or (match.key == ""):
             return "Not Recording", 500
 
         data = {'id': match.key, 'auth': config.VIDEO_SERVER_CREDENTIAL}
