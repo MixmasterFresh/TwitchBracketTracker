@@ -1,0 +1,95 @@
+{% extends "main_layout.html" %}
+{% block body %}
+
+<form action="/admin/match/{{ match.id }}" method="POST" id="special_form">
+	<section id="bracket">
+    <h1 class="match_title" style="text-align:center;font-family: 'Roboto Condensed', sans-serif; color: #333;">
+      Match {{ match.id + 1 }} | {{ match.get_round() }} | {{ match.get_time() }}
+    </h1>
+    <div class="wrap">
+      <div id="nav_left" class="left-item">
+        {% if match.id == 0 %}
+          <a style="color:transparent;">&lt;&nbsp;</a>
+        {% else %}
+          <a href="/admin/match/{{ match.id - 1 }}" style="color:#999;text-decoration:none;">&lt;&nbsp;</a>
+        {% endif %}
+        </div> 
+      <div class="center-item">
+      <table>
+        <col width="1">
+        <col width="300">
+        <col width="1">
+        <thead>
+          <tr>
+            <th>Winner</th>
+            <th>Players</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="team-row team">
+            <td style="text-align:center">
+                <input type="checkbox" name="team1-wins" class="center" 
+                {% if match.winner == 1 %}
+                  checked
+                {% endif %}>
+            </td>
+            <td>
+              {{ match.team1.names[0] }}
+              {% for i in range(1, config.NUMBER_OF_PLAYERS) %}
+                <br/>
+                {{ match.team1.names[i] }}
+              {% endfor %}
+            </td>
+            <td><input type="number" name="team1-score" style="width:50px" value="{{ match.team1_score }}"></td>
+          </tr>
+          <tr class="team-row team">
+            <td style="text-align:center">
+                <input type="checkbox" name="team2-wins" class="center"
+                {% if match.winner == 2 %}
+                  checked
+                {% endif %}>
+            </td>
+            <td>
+              {{ match.team2.names[0] }}
+              {% for i in range(1, config.NUMBER_OF_PLAYERS) %}
+                <br/>
+                {{ match.team2.names[i] }}
+              {% endfor %}
+            </td>
+            <td><input type="number" name="team2-score" style="width:50px" value="{{ match.team2_score }}"></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div id="nav_right" class="right-item">
+        {% if match.id + 2 == config.NUMBER_OF_TEAMS %}
+          <a style="color:transparent;">&nbsp;&gt;</a>
+        {% else %}
+          <a href="/admin/match/{{ match.id + 1 }}" style="color:#999;text-decoration:none;">&nbsp;&gt;</a>
+        {% endif %}
+      </div>
+    </div>
+    <div style="height:50px;"></div>
+    <div class="alert-box success center" style="width:30%;text-align:center;">Successful</div>
+    <div class="alert-box failure center" style="width:30%;text-align:center;">Failure</div>
+    <div class="alert-box warning center" style="width:30%;text-align:center;">Warning</div>
+    <div style="width:100%;text-align:center;">
+      
+      {% if match.live %}
+        <button class="record recording" value="ON" id="record">Stop Recording</button>
+      {% else %}
+        <button class="record" value="OFF" id="record">Record</button>
+      {% endif %}
+      
+      <input type="submit" class="submit center">
+    </div>
+</form>
+    <div style="width:100%;text-align:center;">
+      <a href="/admin" class="button">Back To Dashboard</a>
+    </div>
+
+<script>
+  {% include "js/recorder.js" %}
+</script>
+{% endblock %}

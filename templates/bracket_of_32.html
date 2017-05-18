@@ -1,0 +1,70 @@
+{% import 'partials/match.html' as match %}
+
+<section id="bracket">
+	<div class="container teamsize-{{ config.NUMBER_OF_PLAYERS }}">
+	<div class="split split-one">
+		<div class="round round-one current">
+			<div class="round-details">Round 1</div>
+			{% for m in matches[0:8] %}
+        {{ match.match_block(m, config, editable=editable, team_edit=editable) }}
+				<!-- END MATCH -->
+      {% endfor %}
+		</div>	<!-- END ROUND ONE -->
+
+		<div class="round round-two">
+			<div class="round-details">Round 2</div>			
+			{% for m in matches[16:20] %}
+        {{ match.match_block(m, config, editable=editable) }}
+      {% endfor %}									
+		</div>	<!-- END ROUND TWO -->
+		
+		<div class="round round-three">
+			<div class="round-details">Round 3</div>			
+			{% for m in matches[24:26] %}
+        {{ match.match_block(m, config, editable=editable) }}
+      {% endfor %}										
+		</div>	<!-- END ROUND THREE -->		
+	</div> 
+
+<div class="champion">
+		<div class="semis-l">
+			<div class="round-details">left bracket semifinals <br/></div>		
+			{{ match.match_block(matches[28], config, class="championship", editable=editable) }}
+		</div>
+		<div class="final">
+			<i class="fa fa-trophy"></i>
+			<div class="round-details">championship</div>		
+			{{ match.match_block(matches[30], config, class="championship", editable=editable) }}
+		</div>
+		<div class="semis-r">		
+			<div class="round-details">right bracket semifinals</div>		
+			{{ match.match_block(matches[29], config, class="championship", editable=editable) }}
+		</div>	
+	</div>
+
+
+	<div class="split split-two">
+
+
+		<div class="round round-three">
+			<div class="round-details">Round 3</div>						
+			{% for m in matches[26:28] %}
+        {{ match.match_block(m, config, editable=editable) }}
+      {% endfor %}										
+		</div>	<!-- END ROUND THREE -->	
+
+		<div class="round round-two">
+			<div class="round-details">Round 2</div>						
+			{% for m in matches[20:24] %}
+        {{ match.match_block(m, config, editable=editable) }}
+      {% endfor %}										
+		</div>	<!-- END ROUND TWO -->
+
+ 		<div class="round round-one current">
+			<div class="round-details">Round 1</div>
+			{% for m in matches[8:16] %}
+        {{ match.match_block(m, config, editable=editable, team_edit=editable) }}
+      {% endfor %}										
+		</div>	<!-- END ROUND ONE -->          				
+	</div>
+	</div>

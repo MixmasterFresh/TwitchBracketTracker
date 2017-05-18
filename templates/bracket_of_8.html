@@ -1,0 +1,34 @@
+{% import 'partials/match.html' as match %}
+<section id="bracket">
+	<div class="container teamsize-{{ config.NUMBER_OF_PLAYERS }}">
+	<div class="split split-one">
+		<div class="round round-one current">
+			<div class="round-details">Round 1<!--<br/><span class="date">March 16</span>--></div>
+			{% for m in matches[0,4] %}
+        {{ match.match_block(m, config, editable=editable, team_edit=editable) }}
+      {% endfor %}
+		</div>	<!-- END ROUND ONE -->
+
+		<div class="round round-two">
+			<div class="round-details">Round 2</div>			
+			{% for m in matches[8,10] %}
+        {{ match.match_block(m, config, editable=editable) }}
+      {% endfor %}									
+		</div>	<!-- END ROUND TWO -->
+		
+		<div class="round round-three">
+			<div class="round-details">Round 3</div>			
+      {{ match.match_block(matches[12], config, editable=editable) }}								
+		</div>	<!-- END ROUND THREE -->		
+	</div> 
+
+<div class="champion">
+		<div class="final">
+			<i class="fa fa-trophy"></i>
+			<div class="round-details">championship</div>		
+			{{ match.match_block(matches[14], config, class="championship", editable=editable) }}
+		</div>
+	</div>
+
+</div>
+

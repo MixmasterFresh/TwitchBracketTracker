@@ -1,0 +1,24 @@
+{% extends "main_layout.html" %}
+{% block body %}
+{% if editable %}
+  <form action="/admin/set_teams" method="POST" id="special_form">
+{% endif %}
+{% if config.NUMBER_OF_TEAMS == 32 %}
+  {% include "bracket_of_32.html" %}
+{% elif config.NUMBER_OF_TEAMS == 16 %}
+  {% include "bracket_of_16.html" %}
+{% elif config.NUMBER_OF_TEAMS == 8 %}
+  {% include "bracket_of_8.html" %}
+{% endif %}
+
+
+{% if editable %}
+  <div class="alert-box success center" style="width:30%;text-align:center;">Successful</div>
+	<div class="alert-box failure center" style="width:30%;text-align:center;">Failure</div>
+	<div class="alert-box warning center" style="width:30%;text-align:center;">Warning</div>
+  <div style="width:100%;text-align:center;">
+      <input type="submit" class="submit center">
+  </div>
+  </form>
+{% endif %}
+{% endblock %}

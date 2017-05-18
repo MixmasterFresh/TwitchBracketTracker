@@ -1,0 +1,67 @@
+{% macro name_entry(team_id,current_name,player_index) -%}
+  <input type="text" class="name-input" name="team{{team_id}}player{{player_index}}" value="{{ current_name }}"/>
+{%- endmacro %}
+
+{% macro team_line(team, config, winner, score="", editable=False) -%}
+    <li class="team team-top
+      {% if team.id == -1 %}
+        unfilled
+      {% endif %}
+
+      {%if winner==1 %}
+        winner
+      {% elif winner==-1 %}
+        loser
+      {% endif %}">
+      {% if editable %}
+        {{ name_entry(team.id, team.names[0], 0) }}
+      {% else %}
+        {{ team.names[0] }}
+      {% endif %}
+      <span class="score">{{ score }}</span>
+      {% for i in range(1, config.NUMBER_OF_PLAYERS) %}
+        <br/>
+        {% if editable %}
+          {{ name_entry(team.id, team.names[i], i) }}
+        {% else %}
+          {{ team.names[i] }}
+        {% endif %}
+      {% endfor %}
+      </li>
+{%- endmacro %}
+
+{% macro match_block(match, config, class="", editable=False, champs=False, team_edit=False) -%}
+    <ul class="matchup {{ class }}" id="matchup{{ match.id }}">
+      {% if match.winner == 0 %}
+        {% if editable %}
+          <div class="top-time">{{ match.get_time() }} | <a href="/admin/match/{{ match.id }}" style="color: #3F915F !important;">Edit</a></div>
+        {% elif match.live %}
+          <div class="top-time">{{ match.get_time() }} | <div class="light blink"></div> <a href="{{ config.TWITCH_STREAM }}" style="color: #3F915F !important;">LIVE</a></div>
+        {% else %}
+          <div class="top-time">{{ match.get_time() }}</div>
+        {% endif %}
+        {{ team_line(match.team1, config, 0, editable=team_edit) }}
+        {{ team_line(match.team2, config, 0, editable=team_edit) }}
+      {% else %}
+        {% if editable %}
+          <div class="top-time">Match {{ match.id + 1 }} | <a href="/admin/match/{{ match.id }}" style="color: #3F915F !important;">Edit</a></div>
+        {% elif match.video == "" %}
+          <div class="top-time">Match {{ match.id + 1 }} | Final</div>
+        {% else %}
+          <div class="top-time">Match {{ match.id + 1 }} | <a id="bla-{{match.id}}" href="{{ match.video }}" style="color: #3F915F !important;">Watch</a></div>
+          <script>
+            jQuery(function(){
+              jQuery("a.bla-{{match.id}}").YouTubePopUp();
+            });
+          </script>
+        {% endif %}
+        {% if match.winner == 1 %}
+          {{ team_line(match.team1, config, 1, score=match.team1_score, editable=team_edit) }}
+          {{ team_line(match.team2, config, -1, score=match.team2_score, editable=team_edit) }}
+        {% else %}
+          {{ team_line(match.team1, config, -1, score=match.team1_score, editable=team_edit) }}
+          {{ team_line(match.team2, config, 1, score=match.team2_score, editable=team_edit) }}
+        {% endif %}
+      {% endif %}
+    </ul>
+{%- endmacro %}
