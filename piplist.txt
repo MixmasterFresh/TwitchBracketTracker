@@ -4,3 +4,4 @@ mongoengine
 livestreamer
 httplib2
 google-api-python-client
+simplejson

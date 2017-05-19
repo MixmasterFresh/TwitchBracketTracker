@@ -3,6 +3,7 @@ from flask import g
 from functools import wraps
 from flask_cache import Cache
 import urllib.request as urllib2
+import json
 import db
 import helper
 import config
@@ -150,12 +151,15 @@ def start_recording(id):
             'tournament_name': config.NAME,
             'stream': config.TWITCH_STREAM,
             'auth': config.VIDEO_SERVER_CREDENTIAL,
-            'return_url': request.url_root + '/admin/video/' + str(match.id)
+            'return_url': request.url_root + 'admin/video/' + str(match.id)
         }
         req = urllib2.Request(config.VIDEO_SERVER_ADDRESS + '/start')
         req.add_header('Content-Type', 'application/json')
-        response = urllib2.urlopen(req, json.dumps(data))
+        response = urllib2.urlopen(req, json.dumps(data).encode('utf-8'))
 
+        json_data = json.loads(response.read().decode('utf-8')) 
+        
+        match.key = json_data['key']
         match.live = True;
         match.save()
         return "Success"
@@ -168,13 +172,13 @@ def stop_recording(id):
     try:
         #get various parameters
         match = db.get_match(id)
-        if (not match.live) or (match.key == ""):
+        if (not match.live):
             return "Not Recording", 500
 
         data = {'id': match.key, 'auth': config.VIDEO_SERVER_CREDENTIAL}
         req = urllib2.Request(config.VIDEO_SERVER_ADDRESS + '/stop')
         req.add_header('Content-Type', 'application/json')
-        response = urllib2.urlopen(req, json.dumps(data))
+        response = urllib2.urlopen(req, json.dumps(data).encode('utf-8'))
 
         match.live = False
         match.save()
@@ -238,4 +242,4 @@ def send_image(path):
 
 if __name__ == "__main__":
     app.jinja_env.cache = {}
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=8080)
