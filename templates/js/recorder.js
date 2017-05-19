@@ -33,6 +33,24 @@ $("#record").click(function(e) {
     }
 });
 
+$('#delete').click(function(e) {
+    e.preventDefault();
+    var result = confirm("Are you sure that you\nwant to delete this video?");
+    if (result) {
+        $.ajax({
+            type: "GET",
+            url: "/admin/delete_video/{{match.id}}",
+            data: {},
+            success: function(result) {
+                $( "div.success" ).fadeIn( 300 ).delay( 1500 ).fadeOut( 400 );
+            },
+            error: function(result) {
+                alert(result.responseText);
+                console.log(result);
+            }
+        });
+    }
+});
 
 $(document).ready(function() {
   $('input[type="checkbox"]').on('change', function() {

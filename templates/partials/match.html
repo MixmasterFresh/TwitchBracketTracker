@@ -51,7 +51,7 @@
           <div class="top-time">Match {{ match.id + 1 }} | <a id="bla-{{match.id}}" href="{{ match.video }}" style="color: #3F915F !important;">Watch</a></div>
           <script>
             jQuery(function(){
-              jQuery("a.bla-{{match.id}}").YouTubePopUp();
+              jQuery("a#bla-{{match.id}}").YouTubePopUp();
             });
           </script>
         {% endif %}

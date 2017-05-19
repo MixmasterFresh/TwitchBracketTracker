@@ -208,11 +208,13 @@ def delete_video(id):
     try:
         #get various parameters
         match = db.get_match(id)
+        if match.video == "":
+            return "No video is currently on file.\nIf you were expecting one perhaps it is still processing.\nIn that case it should be around shortly.", 500
         match.video = ""
         match.save()
         return "Success"
     except ValueError:
-        return "Failure"
+        return "Failure", 500
 
 
 # handle login failed
