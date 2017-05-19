@@ -1,10 +1,15 @@
-from flask import Flask, Response, redirect, url_for, request, session, abort, render_template, send_from_directory, make_response
+from flask import Flask, Response, redirect, url_for, request, session, abort, render_template, send_from_directory, make_response, jsonify
 from flask import g
 from concurrent.futures import ThreadPoolExecutor
 from livestreamer import Livestreamer
 import random
 import os
+import time
 import urllib.request as urllib2
+import subprocess
+import json
+import sys
+import string
 import upload
 
 
@@ -23,78 +28,88 @@ def set_proc(id, proc):
     procs[id] = proc
 
 def set_status(id, status):
-    procs[id].status = status
+    procs[id] = status
 
-def get_status(id, status):
-    procs[id].status
+def get_status(id):
+    return procs[id]
 
 def make_random_key():
     return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(32))
 
 def notify_tournament(attrs, video_id):
-    data = {'video': video_id}
+    data = {'video': video_id, 'key': attrs['id']}
+    attrs['return_url'] = attrs['return_url'].replace("http","https")
+    print("notifying: " + attrs['return_url'])
+    print(json.dumps(data))
     req = urllib2.Request(attrs['return_url'])
     req.add_header('Content-Type', 'application/json')
-    response = urllib2.urlopen(req, json.dumps(data))
+    response = urllib2.urlopen(req, json.dumps(data).encode('utf-8'))
 
 def record(attrs):
-    root_path = os.path.dirname(os.path.realpath(__file__))
-
-    streams_path = os.path.join(root_path, "streams")
-    videos_path = os.path.join(root_path, "videos")
-    if(os.path.isdir(streams_path) is False):
-        os.makedirs(streams_path)
-    if(os.path.isdir(videos_path) is False):
-        os.makedirs(videos_path)
-    session = Livestreamer()
-    headers = {}
-    headers['Client-ID']='jzkbprff40iqj646a697cyrvl0zt2m6'
-    session.set_option('http-headers',headers)
-    data_filename = 'streams/' + attrs['title'].replace(" ", "") + ".dat"
-    video_filename = 'videos/' + attrs['title'].replace(" ", "") + ".mp4"
-    streams = session.streams(attrs['url'])
-    stream = streams[list(streams.keys())[0]]
-    if 'source' in streams.keys():
-        stream = streams['source']
-    elif 'best' in stream.keys():
+    try:
+        root_path = os.path.dirname(os.path.realpath(__file__))
+        print("Recording process started...")
+        streams_path = os.path.join(root_path, "streams")
+        videos_path = os.path.join(root_path, "videos")
+        if(os.path.isdir(streams_path) is False):
+            os.makedirs(streams_path)
+        if(os.path.isdir(videos_path) is False):
+            os.makedirs(videos_path)
+        session = Livestreamer()
+        headers = {}
+        headers['Client-ID']='jzkbprff40iqj646a697cyrvl0zt2m6'
+        session.set_option('http-headers',headers)
+        data_filename = 'streams/' + attrs['title'].replace(" ", "") + ".dat"
+        video_filename = 'videos/' + attrs['title'].replace(" ", "") + ".mp4"
+        streams = session.streams(attrs['url'])
+        stream = streams[list(streams.keys())[0]]
         stream = streams['best']
-    else:
-        stream = streams['worst']
 
-    empty = True
-    t_end = time.time() + 60 * 10
-    with stream.open() as fd:
-        fd.timeout = 60.0
-        with open(data_filename, "wb") as f:
-            while get_status(attrs['id']) and time.time() < t_end:
-                try:
-                    data = fd.read(65536)
-                    f.write(data)
-                    empty = False
-                except StreamError:
-                    break
-    if empty:
-        return ""
+        empty = True
+        t_end = time.time() + 60 * 10
+        print("starting recording...")
+        with stream.open() as fd:
+            fd.timeout = 60.0
+            with open(data_filename, "wb") as f:
+                while get_status(attrs['id']) and time.time() < t_end:
+                    try:
+                        data = fd.read(65536)
+                        f.write(data)
+                        empty = False
+                    except StreamError:
+                        break
+        if empty:
+            return ""
 
-    subprocess.call(['ffmpeg', '-err_detect', 'ignore_err', '-i', data_filename, '-c', 'copy', video_filename])
-    os.remove(data_filename)
-    attrs['file'] = video_filename
-    video_id = upload.upload_video(attrs)
-    if video_id  == "":
-        print("Video {vid} failed to upload.".format(vid=video_filename))
-    else:
-        notify_tournament(attrs, video_id)
-        os.remove(video_filename)
+
+        print("finished recording...")
+        subprocess.call(['ffmpeg', '-y', '-err_detect', 'ignore_err', '-i', data_filename, '-c', 'copy', '-bsf:a', 'aac_adtstoasc', video_filename])
+        print("ffmpeged it...")
+        os.remove(data_filename)
+        attrs['file'] = video_filename
+        video_id = upload.upload_video(attrs)
+        if video_id  == "":
+            print("Video {vid} failed to upload.".format(vid=video_filename))
+        else:
+            notify_tournament(attrs, video_id)
+            os.remove(video_filename)
+
+    except:
+        print("Unexpected error:")
+        print(sys.exc_info())
+        raise
 
 
 
 def start_recording(title, description, tournament_name, stream, return_url):
+    attrs = {}
     attrs['id'] = make_random_key()
     attrs['title'] = title
     attrs['description'] = description
     attrs['tag'] = tournament_name
     attrs['url'] = stream
     attrs['return_url'] = return_url
+    procs[attrs['id']] = True
     executor.submit(record, attrs)
     return attrs['id']
 
