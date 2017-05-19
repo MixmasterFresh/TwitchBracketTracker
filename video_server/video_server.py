@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from livestreamer import Livestreamer
 import random
 import os
+import urllib.request as urllib2
 import upload
 
 
