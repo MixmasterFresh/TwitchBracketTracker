@@ -1,6 +1,12 @@
 {% extends "main_layout.html" %}
 {% block body %}
-<form action="/login" method="POST">
+<form action="/login" method="POST" style="text-align:center;">
+<p>
+  To go to the page you were trying to access,
+  you must first login. If you have not been
+  given express permission to access the pages
+  beyond this point, leave now.
+</p>
 <input type="password" name="password" class="center"><br>
 <input type="submit" value="Save">
 </form>

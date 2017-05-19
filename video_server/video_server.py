@@ -38,7 +38,7 @@ def make_random_key():
 
 def notify_tournament(attrs, video_id):
     data = {'video': video_id, 'key': attrs['id']}
-    attrs['return_url'] = attrs['return_url'].replace("http","https")
+    attrs['return_url'] = attrs['return_url'].replace("http://","https://")
     print("notifying: " + attrs['return_url'])
     print(json.dumps(data))
     req = urllib2.Request(attrs['return_url'])
@@ -97,6 +97,7 @@ def record(attrs):
     except:
         print("Unexpected error:")
         print(sys.exc_info())
+        notify_tournament(attrs, "")
         raise
 
 

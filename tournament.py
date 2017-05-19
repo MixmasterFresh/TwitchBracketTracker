@@ -27,7 +27,7 @@ def login_required(f):
         auth = request.authorization
         if ('found' in request.cookies) and (request.cookies['found'] == 'authenticated'):
             return f(*args, **kwargs)
-        return redirect(url_for('login'))
+        return redirect('/login')
     return decorated
 
 
@@ -58,10 +58,10 @@ def login():
             response.set_cookie('found',value='authenticated')
             return response
         else:
-            return redirect(url_for('/login'))
+            return redirect('/login')
     else:
         if ('found' in request.cookies) and (request.cookies['found'] == 'authenticated'):
-            return redirect(url_for('/admin'))
+            return redirect('/admin')
         else:
             return render_template("login.html", config=config)
 
@@ -157,8 +157,8 @@ def start_recording(id):
         req.add_header('Content-Type', 'application/json')
         response = urllib2.urlopen(req, json.dumps(data).encode('utf-8'))
 
-        json_data = json.loads(response.read().decode('utf-8')) 
-        
+        json_data = json.loads(response.read().decode('utf-8'))
+
         match.key = json_data['key']
         match.live = True;
         match.save()
@@ -196,6 +196,7 @@ def register_video(id):
         if json_dict['key'] == match.key:
             match.video = json_dict['video']
             match.key = ""
+            match.live = False
             match.save()
 
         return "Success"
