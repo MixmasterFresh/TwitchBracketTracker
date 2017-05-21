@@ -1,9 +1,10 @@
 from flask import Flask, Response, redirect, url_for, request, session, abort, render_template, send_from_directory, make_response
-from flask import g
+from flask import g, after_this_request
 from functools import wraps
 from flask_cache import Cache
 import urllib.request as urllib2
 import json
+import gzip
 import db
 import helper
 import config
@@ -25,7 +26,7 @@ def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if ('found' in request.cookies) and (request.cookies['found'] == 'authenticated'):
+        if ('found' in request.cookies) and (request.cookies['found'] == db.cookie_value()):
             return f(*args, **kwargs)
         return redirect('/login')
     return decorated
@@ -41,9 +42,33 @@ def cache_resource(time):
         return no_cache
     return cr
 
+def gzipped(view):
+    @wraps(view)
+    def zipper(*args, **kwargs):
+        accept_encoding = request.headers.get('Accept-Encoding', '')
+        response = make_response(view(*args, **kwargs))
+        if 'gzip' not in accept_encoding.lower():
+            return response
+
+        response.direct_passthrough = False
+
+        if (response.status_code < 200 or
+            response.status_code >= 300 or
+            'Content-Encoding' in response.headers):
+            return response
+
+        response.data = gzip.compress(response.data)
+        response.headers['Content-Encoding'] = 'gzip'
+        response.headers['Vary'] = 'Accept-Encoding'
+        response.headers['Content-Length'] = len(response.data)
+
+        return response
+    return zipper
+
 # some protected url
 @app.route('/')
 @app.cache.cached(timeout=20)
+@gzipped
 def home():
     return render_template('bracket.html', config=config, matches=db.get_all_matches(), editable=False, admin=False)
 
@@ -55,23 +80,25 @@ def login():
         if password == config.PASSWORD:
             redirect_to_index = redirect('/admin')
             response = make_response(redirect_to_index )
-            response.set_cookie('found',value='authenticated')
+            response.set_cookie('found',value=db.cookie_value())
             return response
         else:
             return redirect('/login')
     else:
-        if ('found' in request.cookies) and (request.cookies['found'] == 'authenticated'):
+        if ('found' in request.cookies) and (request.cookies['found'] == db.cookie_value()):
             return redirect('/admin')
         else:
             return render_template("login.html", config=config)
 
 @app.route("/admin")
 @login_required
+@gzipped
 def admin():
     return render_template('bracket.html', config=config, matches=db.get_all_matches(), editable=True, admin=True, form_target="/admin/set_teams")
 
 @app.route("/admin/preview")
 @login_required
+@gzipped
 def preview():
     return render_template('bracket.html', config=config, matches=db.get_all_matches(), editable=False, admin=True)
 
@@ -135,6 +162,8 @@ def start_recording(id):
             return "Already Recording", 500
         elif match.video != "":
             return "Recording Already Exists", 500
+        elif match.video_pending:
+            return "Video Processing"
 
         description = ""
         for player in match.team1.names:
@@ -148,7 +177,7 @@ def start_recording(id):
         data = {
             'title': config.NAME + ': Match ' + str(match.id + 1),
             'description': description,
-            'tournament_name': config.NAME,
+            'tournament_name': config.NAME + " Tournament",
             'stream': config.TWITCH_STREAM,
             'auth': config.VIDEO_SERVER_CREDENTIAL,
             'return_url': request.url_root + 'admin/video/' + str(match.id)
@@ -181,6 +210,7 @@ def stop_recording(id):
         response = urllib2.urlopen(req, json.dumps(data).encode('utf-8'))
 
         match.live = False
+        match.video_pending = True
         match.save()
         return "Success"
     except ValueError:
@@ -197,6 +227,7 @@ def register_video(id):
             match.video = json_dict['video']
             match.key = ""
             match.live = False
+            match.video_pending = False
             match.save()
 
         return "Success"
@@ -230,16 +261,19 @@ def page_not_found(e):
 
 @app.route('/js/<path:path>')
 @cache_resource(100000)
+@gzipped
 def send_js(path):
     return send_from_directory('js', path)
 
 @app.route('/css/<path:path>')
 @cache_resource(100000)
+@gzipped
 def send_css(path):
     return send_from_directory('css', path)
 
 @app.route('/images/<path:path>')
 @cache_resource(100000)
+@gzipped
 def send_image(path):
     return send_from_directory('images', path)
 
