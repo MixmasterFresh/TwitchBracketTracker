@@ -66,7 +66,7 @@ def record(attrs):
         stream = streams['best']
 
         empty = True
-        t_end = time.time() + 60 * 10
+        t_end = time.time() + 60 * 20
         print("starting recording...")
         with stream.open() as fd:
             fd.timeout = 60.0

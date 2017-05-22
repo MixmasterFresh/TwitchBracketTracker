@@ -2,6 +2,8 @@ from mongoengine import *
 from datetime import datetime
 import config
 import math
+import random
+import string
 
 connect(config.DB_NAME, host='localhost', port=27017)
 
@@ -9,11 +11,20 @@ class Team(Document):
     number = IntField(primary_key=True)
     names = ListField(StringField())
 
+class Token(Document):
+    name = StringField(primary_key=True)
+    value = StringField(required=True)
+
+    def refresh(self):
+        self.value = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(32))
+
+
 class Match(Document):
     number = IntField(primary_key=True)
     team1 = ReferenceField(Team, required=True)
     team2 = ReferenceField(Team, required=True)
-    live = BooleanField(live=False)
+    live = BooleanField(default=False)
+    video_pending = BooleanField(default=False)
     team1_score = IntField(default=0)
     team2_score = IntField(default=0)
     winner = IntField(default=0)
@@ -67,6 +78,9 @@ class Match(Document):
         next_match_id = (self.id - offset) + round_diff + int(offset/2)
         return Match.objects.get(number=next_match_id)
 
+def cookie_value():
+    return Token.objects.get(name=config.NAME).value
+
 def null_team():
     return Team.objects.get(number=-1)
 
@@ -76,8 +90,14 @@ def blank_team(id, team_size):
     return blank_team
 
 def init(num_of_teams, team_size, start_time, time_diff):
+    if len(Token.objects(name=config.NAME)) == 0:
+        cookie = Token(name=config.NAME,value="")
+        cookie.refresh()
+        cookie.save()
+
     if len(Team.objects) >= num_of_teams:
         return
+
     null_team = Team(id=-1, names=["" for i in range(team_size)])
     null_team.save()
     start = start_time
