@@ -4,14 +4,14 @@
 	<div class="split split-one">
 		<div class="round round-one current">
 			<div class="round-details">Round 1<!--<br/><span class="date">March 16</span>--></div>
-			{% for m in matches[0,4] %}
+			{% for m in matches[0:4] %}
         {{ match.match_block(m, config, editable=editable, team_edit=editable) }}
       {% endfor %}
 		</div>	<!-- END ROUND ONE -->
 
 		<div class="round round-two">
 			<div class="round-details">Round 2</div>			
-			{% for m in matches[8,10] %}
+			{% for m in matches[8:10] %}
         {{ match.match_block(m, config, editable=editable) }}
       {% endfor %}									
 		</div>	<!-- END ROUND TWO -->
@@ -41,14 +41,14 @@
 
 		<div class="round round-two">
 			<div class="round-details">Round 2</div>						
-			{% for m in matches[11,12] %}
+			{% for m in matches[10:12] %}
         {{ match.match_block(m, config, editable=editable) }}
       {% endfor %}										
 		</div>	<!-- END ROUND TWO -->
 
  		<div class="round round-one current">
 			<div class="round-details">Round 1</div>
-			{% for m in matches[4,8] %}
+			{% for m in matches[4:8] %}
         {{ match.match_block(m, config, editable=editable, team_edit=editable) }}
       {% endfor %}										
 		</div>	<!-- END ROUND ONE -->          				
