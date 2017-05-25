@@ -115,6 +115,18 @@ def set_teams():
 
     return "Success"
 
+@app.route("/admin/delay_matches", methods=["POST"])
+@login_required
+def delay_matches():
+    delta = int(request.form["minutes"])
+    db.delay_matches(delta)
+    return "Success"
+
+@app.route("/admin/settings")
+@login_required
+def get_settings():
+    return render_template("settings.html", config=config, form_target="/admin/delay_matches", admin=True, editable=False)
+
 @app.route("/admin/match/<id>", methods=["GET", "POST"])
 @login_required
 def match(id):

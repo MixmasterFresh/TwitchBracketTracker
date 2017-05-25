@@ -1,0 +1,16 @@
+{% extends "main_layout.html" %}
+{% block body %}
+
+<form action="/admin/delay_matches" method="POST" id="special_form" style="text-align:center;">
+Move Matches Back <input type="number" name="minutes" class="center" value="10" style="margin-top:20px;"> Minutes<br>
+<div style="height:70px;"></div>
+<div class="alert-box success center" style="width:30%;text-align:center;">Successful</div>
+<div class="alert-box failure center" style="width:30%;text-align:center;">Failure</div>
+<div class="alert-box warning center" style="width:30%;text-align:center;">Warning</div>
+<div style="width:100%;text-align:center;">
+<input type="submit" value="Save">
+</form>
+<script>
+	{% include "js/save.js" %}
+</script>
+{% endblock %}
