@@ -1,5 +1,5 @@
 from mongoengine import *
-from datetime import datetime
+from datetime import datetime, timedelta
 import config
 import math
 import random
@@ -122,4 +122,18 @@ def get_team(id):
 def get_match(id):
     return Match.objects.get(number=id)
 
+def update_times():
+    matches = get_all_matches()
+    start_time = config.START_TIME
+    time_diff = config.TIME_PER_MATCH
+    for match in matches:
+        match.time = start_time
+        match.save()
+        start_time += time_diff
 
+def delay_matches(minutes):
+    matches = get_all_matches()
+    diff = timedelta(minutes=minutes)
+    for match in matches:
+        match.time = match.time + diff
+        match.save()
