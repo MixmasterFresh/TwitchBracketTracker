@@ -20,6 +20,9 @@ app.config['CACHE_TYPE'] = 'simple'
 
 app.cache = Cache(app)
 
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
+
 db.init(config.NUMBER_OF_TEAMS, config.NUMBER_OF_PLAYERS, config.START_TIME, config.TIME_PER_MATCH)
 
 def login_required(f):
