@@ -10,18 +10,18 @@
 		</div>	<!-- END ROUND ONE -->
 
 		<div class="round round-two">
-			<div class="round-details">Round 2</div>			
-			{% for m in matches[5:6] %}
+			<div class="round-details">Round 2</div>
+			{% for m in matches[4:6] %}
         {{ match.match_block(m, config, editable=editable) }}
-      {% endfor %}									
-		</div>	<!-- END ROUND TWO -->		
-	</div> 
+      {% endfor %}
+		</div>	<!-- END ROUND TWO -->
+	</div>
 
 <div class="champion">
 		<div class="final">
 			<i class="fa fa-trophy"></i>
-			<div class="round-details">championship</div>		
-			{{ match.match_block(matches[7], config, class="championship", editable=editable) }}
+			<div class="round-details">championship</div>
+			{{ match.match_block(matches[6], config, class="championship", editable=editable) }}
 		</div>
 	</div>
 
