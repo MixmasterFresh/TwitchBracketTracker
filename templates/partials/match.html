@@ -34,11 +34,11 @@
     <ul class="matchup {{ class }}" id="matchup{{ match.number }}">
       {% if match.winner == 0 %}
         {% if editable %}
-          <div class="top-time">{{ match.get_time() }} | <a href="/admin/match/{{ match.number }}" style="color: #3F915F !important;">Edit</a></div>
+          <div class="top-time"><span class="time" value="{{match.raw_time()}}">{{ match.get_time() }}<span> | <a href="/admin/match/{{ match.number }}" style="color: #3F915F !important;">Edit</a></div>
         {% elif match.live %}
-          <div class="top-time">{{ match.get_time() }} | <div class="light blink"></div> <a href="{{ config.TWITCH_STREAM }}" style="color: #3F915F !important;">LIVE</a></div>
+          <div class="top-time"><span class="time" value="{{match.raw_time()}}">{{ match.get_time() }}<span> | <div class="light blink"></div> <a href="{{ config.TWITCH_STREAM }}" style="color: #3F915F !important;">LIVE</a></div>
         {% else %}
-          <div class="top-time">{{ match.get_time() }}</div>
+          <div class="top-time"><span class="time" value="{{match.raw_time()}}">{{ match.get_time() }}<span></div>
         {% endif %}
         {{ team_line(match.team1, config, 0, editable=team_edit) }}
         {{ team_line(match.team2, config, 0, editable=team_edit) }}

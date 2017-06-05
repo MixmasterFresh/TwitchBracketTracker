@@ -61,6 +61,9 @@ class Match(Base):
     def get_time(self):
         return '{d:%I}:{d.minute:02} {d:%p}'.format(d=self.time).lower().lstrip('0')
 
+    def raw_time(self):
+        return '{d.hour:02}:{d.minute:02}'.format(d=self.time)
+
     def advance_winner(self):
         if self.number != config.NUMBER_OF_TEAMS - 2:
             next_match = self.next_match()

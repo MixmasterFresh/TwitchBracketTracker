@@ -4,7 +4,7 @@
 <form action="/admin/match/{{ match.number }}" method="POST" id="special_form">
 	<section id="bracket">
     <h1 class="match_title" style="text-align:center;font-family: 'Roboto Condensed', sans-serif; color: #333;">
-      Match {{ match.number + 1 }} | {{ match.get_round() }} | {{ match.get_time() }}
+      Match {{ match.number + 1 }} | {{ match.get_round() }} | <span class="time" value="{{match.raw_time()}}">{{ match.get_time() }}<span>
     </h1>
     <div class="wrap">
       <div id="nav_left" class="left-item">

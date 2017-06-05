@@ -179,7 +179,7 @@ body {
 }
 .teamsize-2 .round-three .matchup {
     margin-top: 205px;
-    margin-bottom: 255px;   
+    margin-bottom: 255px;
 }
 
 .teamsize-3 .team {
@@ -194,7 +194,7 @@ body {
 }
 .teamsize-3 .round-three .matchup {
     margin-top: 280px;
-    margin-bottom: 380px;   
+    margin-bottom: 380px;
 }
 
 .teamsize-4 .team {
@@ -209,7 +209,7 @@ body {
 }
 .teamsize-4 .round-three .matchup {
     margin-top: 355px;
-    margin-bottom: 505px;   
+    margin-bottom: 505px;
 }
 
 .round-two .matchup {
@@ -261,7 +261,7 @@ tbody {
     border-left: 4px solid !important;
     border-color: #049c04;
     color: #049c04;
-    
+
 }
 .loser {
     color: #888;
@@ -353,19 +353,6 @@ tbody {
     letter-spacing: 2px;
     font-family: 'Istok Web', sans-serif;
     color: #3F915F;
-}
-.round-one .time{
-    padding-top: 30px !important;
-}
-.time {
-    font-size: 10px;
-    letter-spacing: 2px;
-    font-family: 'Istok Web', sans-serif;
-    color: #3F915F;
-    width: 30%; 
-    
-    padding-top: 17px !important;
-    margin-bottom: 0 !important;
 }
 .left-time {
   float: left;
@@ -552,7 +539,7 @@ button:hover,
 [type=submit]:hover,
 .record:hover {
   filter: brightness(90%);
-} 
+}
 
 .record {
   display: inline-block;
@@ -579,12 +566,12 @@ button:hover,
   color: #d60000;
   border: 1px solid #d60000;
   border-bottom: 4px solid #d60000;
-} 
+}
 .alert-box {
 	padding: 15px;
     margin-bottom: 10px;
     border: 1px solid transparent;
-    border-radius: 4px;  
+    border-radius: 4px;
 }
 
 .success {
