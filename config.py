@@ -16,3 +16,11 @@ TIMEZONE_ABBR = "EDT"
 DATE_STRING = helper.custom_strftime('%B {S}, %Y', START_TIME)
 VIDEO_SERVER_ADDRESS = ""
 VIDEO_SERVER_CREDENTIAL = ""
+DATABASE = {
+    'drivername': 'postgres',
+    'host': 'localhost',
+    'port': '5432',
+    'username': 'postgres',
+    'password': 'password',
+    'database': 'brackettracker'
+}

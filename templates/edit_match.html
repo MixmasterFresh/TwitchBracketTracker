@@ -1,17 +1,17 @@
 {% extends "main_layout.html" %}
 {% block body %}
 
-<form action="/admin/match/{{ match.id }}" method="POST" id="special_form">
+<form action="/admin/match/{{ match.number }}" method="POST" id="special_form">
 	<section id="bracket">
     <h1 class="match_title" style="text-align:center;font-family: 'Roboto Condensed', sans-serif; color: #333;">
-      Match {{ match.id + 1 }} | {{ match.get_round() }} | {{ match.get_time() }}
+      Match {{ match.number + 1 }} | {{ match.get_round() }} | {{ match.get_time() }}
     </h1>
     <div class="wrap">
       <div id="nav_left" class="left-item">
-        {% if match.id == 0 %}
+        {% if match.number == 0 %}
           <a style="color:transparent;">&lt;&nbsp;</a>
         {% else %}
-          <a href="/admin/match/{{ match.id - 1 }}" style="color:#999;text-decoration:none;">&lt;&nbsp;</a>
+          <a href="/admin/match/{{ match.number - 1 }}" style="color:#999;text-decoration:none;">&lt;&nbsp;</a>
         {% endif %}
         </div>
       <div class="center-item">
@@ -63,10 +63,10 @@
       </table>
       </div>
       <div id="nav_right" class="right-item">
-        {% if match.id + 2 == config.NUMBER_OF_TEAMS %}
+        {% if match.number + 2 == config.NUMBER_OF_TEAMS %}
           <a style="color:transparent;">&nbsp;&gt;</a>
         {% else %}
-          <a href="/admin/match/{{ match.id + 1 }}" style="color:#999;text-decoration:none;">&nbsp;&gt;</a>
+          <a href="/admin/match/{{ match.number + 1 }}" style="color:#999;text-decoration:none;">&nbsp;&gt;</a>
         {% endif %}
       </div>
     </div>

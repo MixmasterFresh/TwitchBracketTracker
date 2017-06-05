@@ -3,6 +3,7 @@ from flask import g, after_this_request
 from functools import wraps
 from flask_cache import Cache
 import urllib.request as urllib2
+
 import json
 import gzip
 import db
@@ -16,6 +17,10 @@ app.config.update(
     DEBUG=config.DEBUG,
     SECRET_KEY=config.SECRET_KEY
 )
+
+# from flask.ext.profile import Profiler
+# Profiler(app)
+
 app.config['CACHE_TYPE'] = 'simple'
 
 app.cache = Cache(app)
@@ -24,6 +29,10 @@ app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 
 db.init(config.NUMBER_OF_TEAMS, config.NUMBER_OF_PLAYERS, config.START_TIME, config.TIME_PER_MATCH)
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db.session.remove()
 
 def login_required(f):
     @wraps(f)
@@ -112,10 +121,11 @@ def set_teams():
     teams = db.get_all_teams()
     for i in range(config.NUMBER_OF_TEAMS):
         team = teams[i]
+        names = team.names[:]
         for j in range(config.NUMBER_OF_PLAYERS):
-            team.names[j] = request.form["team"+str(i)+"player"+str(j)]
-        team.save()
-
+            names[j] = request.form["team"+str(i)+"player"+str(j)]
+        team.names = names
+    db.session.commit()
     return "Success"
 
 @app.route("/admin/delay_matches", methods=["POST"])
@@ -130,13 +140,13 @@ def delay_matches():
 def get_settings():
     return render_template("settings.html", config=config, form_target="/admin/delay_matches", admin=True, editable=False)
 
-@app.route("/admin/match/<id>", methods=["GET", "POST"])
+@app.route("/admin/match/<number>", methods=["GET", "POST"])
 @login_required
-def match(id):
+def match(number):
     if request.method == 'POST':
         try:
             dirty = False
-            match = db.get_match(id)
+            match = db.get_match(number)
             old_winner = match.winner
             match.winner = 0
             if "team1-wins" in request.form:
@@ -152,27 +162,27 @@ def match(id):
                 match.team2_score = request.form['team2-score']
                 dirty = True
 
-
             if old_winner != match.winner:
-                match.save()
+                db.session.commit()
                 match.advance_winner()
             elif dirty:
-                match.save()
+                db.session.commit()
+
             return "Success"
         except ValueError:
             return "Failure", 500
     else:
         try:
-            return render_template("edit_match.html", match=db.get_match(int(id)), config=config, form_target=("/admin/match/" + str(id)))
+            return render_template("edit_match.html", match=db.get_match(int(number)), config=config, form_target=("/admin/match/" + str(number)))
         except ValueError:
             return abort(401)
 
-@app.route("/admin/start_recording/<id>")
+@app.route("/admin/start_recording/<number>")
 @login_required
-def start_recording(id):
+def start_recording(number):
     try:
         #get various parameters
-        match = db.get_match(id)
+        match = db.get_match(number)
         if match.live:
             return "Already Recording", 500
         elif match.video != "":
@@ -190,12 +200,12 @@ def start_recording(id):
             description += player + "\n"
 
         data = {
-            'title': config.NAME + ': Match ' + str(match.id + 1),
+            'title': config.NAME + ': Match ' + str(match.number + 1),
             'description': description,
             'tournament_name': config.NAME + " Tournament",
             'stream': config.TWITCH_STREAM,
             'auth': config.VIDEO_SERVER_CREDENTIAL,
-            'return_url': request.url_root + 'admin/video/' + str(match.id)
+            'return_url': request.url_root + 'admin/video/' + str(match.number)
         }
         req = urllib2.Request(config.VIDEO_SERVER_ADDRESS + '/start')
         req.add_header('Content-Type', 'application/json')
@@ -205,17 +215,17 @@ def start_recording(id):
 
         match.key = json_data['key']
         match.live = True;
-        match.save()
+        db.session.commit()
         return "Success"
     except ValueError:
         return "Failure", 500
 
-@app.route("/admin/stop_recording/<id>")
+@app.route("/admin/stop_recording/<number>")
 @login_required
-def stop_recording(id):
+def stop_recording(number):
     try:
         #get various parameters
-        match = db.get_match(id)
+        match = db.get_match(number)
         if (not match.live):
             return "Not Recording", 500
 
@@ -226,16 +236,16 @@ def stop_recording(id):
 
         match.live = False
         match.video_pending = True
-        match.save()
+        db.session.commit()
         return "Success"
     except ValueError:
         return "Failure", 500
 
-@app.route("/admin/video/<id>", methods=['POST'])
-def register_video(id):
+@app.route("/admin/video/<number>", methods=['POST'])
+def register_video(number):
     try:
         #get various parameters
-        match = db.get_match(id)
+        match = db.get_match(number)
         json_dict = request.get_json()
 
         if json_dict['key'] == match.key:
@@ -243,22 +253,22 @@ def register_video(id):
             match.key = ""
             match.live = False
             match.video_pending = False
-            match.save()
+            db.session.commit()
 
         return "Success"
     except ValueError:
         return "Failure", 500
 
-@app.route("/admin/delete_video/<id>")
+@app.route("/admin/delete_video/<number>")
 @login_required
-def delete_video(id):
+def delete_video(number):
     try:
         #get various parameters
-        match = db.get_match(id)
+        match = db.get_match(number)
         if match.video == "":
             return "No video is currently on file.\nIf you were expecting one perhaps it is still processing.\nIn that case it should be around shortly.", 500
         match.video = ""
-        match.save()
+        db.session.commit()
         return "Success"
     except ValueError:
         return "Failure", 500

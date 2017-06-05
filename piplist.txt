@@ -6,3 +6,6 @@ httplib2
 google-api-python-client
 simplejson
 gunicorn
+sqlalchemy
+psycopg2
+Flask-Profile
