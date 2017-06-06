@@ -3,6 +3,7 @@ from flask import g, after_this_request
 from functools import wraps
 from flask_cache import Cache
 import urllib.request as urllib2
+from datetime import datetime, timedelta
 
 import json
 import gzip
@@ -145,7 +146,6 @@ def get_settings():
 def match(number):
     if request.method == 'POST':
         try:
-            dirty = False
             match = db.get_match(number)
             old_winner = match.winner
             match.winner = 0
@@ -154,18 +154,19 @@ def match(number):
             elif "team2-wins" in request.form:
                 match.winner = 2
 
-            if request.form['team1-score'] != match.team1_score:
-                match.team1_score = request.form['team1-score']
-                dirty = True
+            match.team1_score = request.form['team1-score']
+            match.team2_score = request.form['team2-score']
 
-            if request.form['team2-score'] != match.team2_score:
-                match.team2_score = request.form['team2-score']
-                dirty = True
+            minutes = int(request.form['minutes'])
+
+            if minutes != 0:
+                diff = timedelta(minutes=minutes)
+                match.time = match.time + diff
 
             if old_winner != match.winner:
                 db.session.commit()
                 match.advance_winner()
-            elif dirty:
+            else:
                 db.session.commit()
 
             return "Success"
@@ -200,7 +201,7 @@ def start_recording(number):
             description += player + "\n"
 
         data = {
-            'title': config.NAME + ': Match ' + str(match.number + 1),
+            'title': config.NAME + ' Tournament: Match ' + str(match.number + 1),
             'description': description,
             'tournament_name': config.NAME + " Tournament",
             'stream': config.TWITCH_STREAM,

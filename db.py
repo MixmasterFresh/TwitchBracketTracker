@@ -91,7 +91,6 @@ class Match(Base):
         total_rounds = int(math.log(config.NUMBER_OF_TEAMS, 2))
         rounds_left = int(math.log(config.NUMBER_OF_TEAMS - self.number - 1, 2))
         offset = int((self.number - config.NUMBER_OF_TEAMS + 2**(rounds_left + 1)))
-        print(offset)
         round_diff = 2**rounds_left
         next_match_number = (self.number - offset) + round_diff + int(offset/2)
         return Match.query.filter(Match.number==next_match_number).first()
