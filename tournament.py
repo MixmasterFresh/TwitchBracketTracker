@@ -181,62 +181,58 @@ def match(number):
 @app.route("/admin/start_recording/<number>")
 @login_required
 def start_recording(number):
-    try:
-        #get various parameters
-        match = db.get_match(number)
-        if match.live:
-            return "Already Recording", 500
-        elif match.video != "":
-            return "Recording Already Exists", 500
-        elif match.video_pending:
-            return "Video Processing"
+    match = db.get_match(number)
+    if match.live:
+        return "Already Recording", 500
+    elif match.video != "":
+        return "Recording Already Exists", 500
+    elif match.video_pending:
+        return "Video Processing"
 
-        description = ""
-        for player in match.team1.names:
-            description += player + "\n"
+    description = ""
+    for player in match.team1.names:
+        description += player + "\n"
 
-        description += "vs.\n"
+    description += "vs.\n"
 
-        for player in match.team2.names:
-            description += player + "\n"
+    for player in match.team2.names:
+        description += player + "\n"
 
-        data = {
-            'title': config.NAME + ' Tournament: Match ' + str(match.number + 1),
-            'description': description,
-            'tournament_name': config.NAME + " Tournament",
-            'stream': config.TWITCH_STREAM,
-            'auth': config.VIDEO_SERVER_CREDENTIAL,
-            'return_url': request.url_root + 'admin/video/' + str(match.number)
-        }
-        req = urllib2.Request(config.VIDEO_SERVER_ADDRESS + '/start')
-        req.add_header('Content-Type', 'application/json')
-        response = urllib2.urlopen(req, json.dumps(data).encode('utf-8'))
+    data = {
+        'title': config.NAME + ' Tournament: Match ' + str(match.number + 1),
+        'description': description,
+        'tournament_name': config.NAME + " Tournament",
+        'stream': config.TWITCH_STREAM,
+        'auth': config.VIDEO_SERVER_CREDENTIAL,
+        'return_url': request.url_root + 'admin/video/' + str(match.number)
+    }
+    req = urllib2.Request(config.VIDEO_SERVER_ADDRESS + '/start')
+    req.add_header('Content-Type', 'application/json')
+    response = urllib2.urlopen(req, json.dumps(data).encode('utf-8'))
 
-        json_data = json.loads(response.read().decode('utf-8'))
+    json_data = json.loads(response.read().decode('utf-8'))
 
-        match.key = json_data['key']
-        match.live = True;
-        db.session.commit()
-        return "Success"
+    match.key = json_data['key']
+    match.live = True;
+    db.session.commit()
+    return "Success"
 
 @app.route("/admin/stop_recording/<number>")
 @login_required
 def stop_recording(number):
-    try:
-        #get various parameters
-        match = db.get_match(number)
-        if (not match.live):
-            return "Not Recording", 500
+    match = db.get_match(number)
+    if (not match.live):
+        return "Not Recording", 500
 
-        data = {'id': match.key, 'auth': config.VIDEO_SERVER_CREDENTIAL}
-        req = urllib2.Request(config.VIDEO_SERVER_ADDRESS + '/stop')
-        req.add_header('Content-Type', 'application/json')
-        response = urllib2.urlopen(req, json.dumps(data).encode('utf-8'))
+    data = {'id': match.key, 'auth': config.VIDEO_SERVER_CREDENTIAL}
+    req = urllib2.Request(config.VIDEO_SERVER_ADDRESS + '/stop')
+    req.add_header('Content-Type', 'application/json')
+    response = urllib2.urlopen(req, json.dumps(data).encode('utf-8'))
 
-        match.live = False
-        match.video_pending = True
-        db.session.commit()
-        return "Success"
+    match.live = False
+    match.video_pending = True
+    db.session.commit()
+    return "Success"
 
 @app.route("/admin/video/<number>", methods=['POST'])
 def register_video(number):
