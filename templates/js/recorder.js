@@ -3,7 +3,7 @@ $("#record").click(function(e) {
     if(e.target.value == "ON"){
         $.ajax({
             type: "GET",
-            url: "/admin/stop_recording/{{match.id}}",
+            url: "/admin/stop_recording/{{match.number}}",
             data: {},
             success: function(result) {
                 e.target.value = "OFF";
@@ -18,7 +18,7 @@ $("#record").click(function(e) {
     }else{
         $.ajax({
             type: "GET",
-            url: "/admin/start_recording/{{match.id}}",
+            url: "/admin/start_recording/{{match.number}}",
             data: {},
             success: function(result) {
                 e.target.value = "ON";
@@ -39,7 +39,7 @@ $('#delete').click(function(e) {
     if (result) {
         $.ajax({
             type: "GET",
-            url: "/admin/delete_video/{{match.id}}",
+            url: "/admin/delete_video/{{match.number}}",
             data: {},
             success: function(result) {
                 $( "div.success" ).fadeIn( 300 ).delay( 1500 ).fadeOut( 400 );
