@@ -218,8 +218,6 @@ def start_recording(number):
         match.live = True;
         db.session.commit()
         return "Success"
-    except ValueError:
-        return "Failure", 500
 
 @app.route("/admin/stop_recording/<number>")
 @login_required
@@ -239,8 +237,6 @@ def stop_recording(number):
         match.video_pending = True
         db.session.commit()
         return "Success"
-    except ValueError:
-        return "Failure", 500
 
 @app.route("/admin/video/<number>", methods=['POST'])
 def register_video(number):
