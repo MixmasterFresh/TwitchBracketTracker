@@ -136,6 +136,56 @@ def delay_matches():
     db.delay_matches(delta)
     return "Success"
 
+@app.route("/admin/switch_matches", methods=["POST"])
+@login_required
+def swap_matches():
+    match1_number = int(request.form["match1"]) - 1
+    match2_number = int(request.form["match2"]) - 1
+
+
+    if match1_number >= int(config.NUMBER_OF_TEAMS/2) or match2_number >= int(config.NUMBER_OF_TEAMS/2):
+        return "Both matches must take place in the first round to be swapped.", 400
+    elif match1_number < 0 or match2_number < 0:
+        return "No negative or zero matches", 400
+    elif match1_number == match2_number:
+        return "Success"
+
+    match1 = db.get_match(match1_number)
+    match2 = db.get_match(match2_number)
+    if match1.live or match2.live or match1.video_pending or match2.video_pending:
+        return "Neither match can be live or awaiting video when swapping.", 400
+
+    match1.number = match2_number
+    match2.number = match1_number
+    temp_time = match1.time
+    match1.time = match2.time
+    match2.time = temp_time
+    db.session.commit()
+    match1.advance_winner()
+    match2.advance_winner()
+    return "Success"
+
+@app.route("/admin/switch_match_times", methods=["POST"])
+@login_required
+def swap_match_times():
+    match1_number = int(request.form["match1"]) - 1
+    match2_number = int(request.form["match2"]) - 1
+
+    if match1_number >= int(config.NUMBER_OF_TEAMS - 1) or match2_number >= int(config.NUMBER_OF_TEAMS - 1):
+        return "Both matches must be valid match indexes.", 400
+    elif match1_number < 0 or match2_number < 0:
+        return "No negative or zero matches", 400
+    elif match1_number == match2_number:
+        return "Success"
+
+    match1 = db.get_match(match1_number)
+    match2 = db.get_match(match2_number)
+    temp_time = match1.time
+    match1.time = match2.time
+    match2.time = temp_time
+    db.session.commit()
+    return "Success"
+
 @app.route("/admin/settings")
 @login_required
 def get_settings():

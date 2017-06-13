@@ -1,16 +1,18 @@
 $(document).ready(function() {
 
-  $('input[type="submit"]').click( function(e) {
+  $('form').submit( function(e) {
     e.preventDefault();
+    console.log(e.target.action)
     $.ajax( {
       type: "POST",
-      url: "{{ form_target }}",
-      data: $("form").serialize(),
+      url: e.target.action,
+      data: $(this).serialize(),
       success: function( response ) {
-        $( "div.success" ).fadeIn( 300 ).delay( 1500 ).fadeOut( 400 );
+        $( "span.success" ).css('display', 'block').fadeIn( 300 ).delay( 1500 ).fadeOut( 400 );
       },
       error: function( response ) {
-        $( "div.failure" ).fadeIn( 300 ).delay( 1500 ).fadeOut( 400 );
+        console.log(response)
+        $( "span.failure" ).text(response.responseText).css('display', 'block').fadeIn( 300 ).delay( 1500 ).fadeOut( 400 );
       }
     });
     return false;
