@@ -1,21 +1,21 @@
 {% extends "main_layout.html" %}
 {% block body %}
 
-<div style="margin-top:20px;height:55px;text-align:center;">
-<span class="alert-box success center" style="width:30%;text-align:center;">Successful</span>
-<span class="alert-box failure center" style="width:30%;text-align:center;">Failure</span>
-<span class="alert-box warning center" style="width:30%;text-align:center;">Warning</span>
+<div class="alert-pen">
+	<span class="alert-box success center">Successful</span>
+	<span class="alert-box failure center">Failure</span>
+	<span class="alert-box warning center">Warning</span>
 </div>
-<form action="/admin/delay_matches" method="POST" id="special_form" style="text-align:center;">
+<form action="/admin/delay_matches" method="POST" class="ajax-form" style="text-align:center;">
 	Move Matches Back <input type="number" name="minutes" class="center" value="10" style="margin-top:20px;"> Minutes
 	<input type="submit" value="Save" style="margin-left: 10px">
 </form>
-<form action="/admin/switch_matches" method="POST" id="special_form" style="text-align:center;">
+<form action="/admin/switch_matches" method="POST" class="ajax-form" style="text-align:center;">
 	Switch Matches <input type="number" name="match1" class="center" style="margin-top:20px;"> and
 	<input type="number" name="match2" class="center" style="margin-top:20px;">
 	<input type="submit" value="Save" style="margin-left: 10px">
 </form>
-<form action="/admin/switch_match_times" method="POST" id="special_form" style="text-align:center;">
+<form action="/admin/switch_match_times" method="POST" class="ajax-form" style="text-align:center;">
 	Switch Match Times For <input type="number" name="match1" class="center" style="margin-top:20px;"> and
 	<input type="number" name="match2" class="center" style="margin-top:20px;">
 	<input type="submit" value="Save" style="margin-left: 10px">

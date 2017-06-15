@@ -1,7 +1,7 @@
 {% extends "main_layout.html" %}
 {% block body %}
 {% if editable %}
-  <form action="/admin/set_teams" method="POST" id="special_form">
+  <form action="/admin/set_teams" method="POST" class="ajax-form">
 {% endif %}
 {% if config.NUMBER_OF_TEAMS == 32 %}
   {% include "bracket_of_32.html" %}
@@ -13,13 +13,13 @@
 
 
 {% if editable %}
-  <div style="margin-top:-50px;height:55px;text-align:center;">
-    <span class="alert-box success center" style="width:30%;text-align:center;">Successful</span>
-    <span class="alert-box failure center" style="width:30%;text-align:center;">Failure</span>
-    <span class="alert-box warning center" style="width:30%;text-align:center;">Warning</span>
+  <div class="alert-pen" style="margin-top:-50px;">
+    <span class="alert-box success center">Successful</span>
+    <span class="alert-box failure center">Failure</span>
+    <span class="alert-box warning center">Warning</span>
   </div>
   <div style="width:100%;text-align:center;">
-      <input type="submit" class="submit center">
+      <input type="submit" class="submit center" value="Submit">
   </div>
   </form>
   <script>

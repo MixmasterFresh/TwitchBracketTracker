@@ -97,8 +97,8 @@ body {
     float: left;
     display: block;
     width: 16%;
-    -webkit-flex-direction: row;
-    flex-direction: row;
+    -webkit-flex-direction: column;
+    flex-direction: column;
     -webkit-align-self: center;
     align-self: center;
     margin-top: -15px;
@@ -123,7 +123,7 @@ body {
     width: 95%;
     width: 30.8333%\9;
 }
-.split-two {} .split-one .round {
+.split-one .round {
     margin: 0 2.5% 0 0;
 }
 .split-two .round {
@@ -279,65 +279,8 @@ tbody {
     width: 85%;
     font-family: 'Istok Web', sans-serif;
 }
-/*.current li {
-    opacity: 1;
-}
-.current li.team {
-    background-color: #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-    opacity: 1;
-}*/
-.vote-options {
-    display: block;
-    height: 52px;
-}
-.share .container {
-    margin: 0 auto;
-    text-align: center;
-}
-.share-icon {
-    font-size: 24px;
-    color: #333;
-    padding: 25px;
-}
-.share-wrap {
-    max-width: 95%;
-    text-align: center;
-    margin: 60px auto;
-}
 .final {
     margin: 4.5em 0;
-}
-@-webkit-keyframes pulse {
-    0% {
-        -webkit-transform: scale(1);
-        transform: scale(1);
-    }
-    50% {
-        -webkit-transform: scale(1.3);
-        transform: scale(1.3);
-    }
-    100% {
-        -webkit-transform: scale(1);
-        transform: scale(1);
-    }
-}
-@keyframes pulse {
-    0% {
-        -webkit-transform: scale(1);
-        -ms-transform: scale(1);
-        transform: scale(1);
-    }
-    50% {
-        -webkit-transform: scale(1.3);
-        -ms-transform: scale(1.3);
-        transform: scale(1.3);
-    }
-    100% {
-        -webkit-transform: scale(1);
-        -ms-transform: scale(1);
-        transform: scale(1);
-    }
 }
 .share-icon {
     color: #333;
@@ -354,9 +297,6 @@ tbody {
     font-family: 'Istok Web', sans-serif;
     color: #3F915F;
 }
-.left-time {
-  float: left;
-}
 .top-time {
     text-align: center;
     line-height: 10px;
@@ -364,9 +304,6 @@ tbody {
     letter-spacing: 2px;
     font-family: 'Istok Web', sans-serif;
     color: #3F915F !important;
-}
-.right-time {
-  float: right;
 }
 .left-teams {
     width: 70%;
@@ -567,11 +504,20 @@ button:hover,
   border: 1px solid #d60000;
   border-bottom: 4px solid #d60000;
 }
+
+.alert-pen {
+    margin-top:20px;
+    height:55px;
+    text-align:center;
+}
+
 .alert-box {
 	padding: 15px;
     margin-bottom: 3px;
     border: 1px solid transparent;
     border-radius: 4px;
+    width:30%;
+    text-align:center;
 }
 
 .success {
