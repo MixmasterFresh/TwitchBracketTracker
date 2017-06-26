@@ -4,6 +4,7 @@ import helper
 DEBUG = True
 SECRET_KEY = "AkduHivuYkUGVBdjv879JGdhbDVsfaSRfEDdfHFsdfsV"
 TWITCH_STREAM = "https://www.twitch.tv/streamer_name"
+TWITCH_STREAM = "streamer_name"
 NUMBER_OF_TEAMS = 32
 NUMBER_OF_PLAYERS = 1
 TEAM_NAMES_ENABLED = False

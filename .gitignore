@@ -6,3 +6,6 @@ __pycache__/**
 **.mp4
 **.ignore.html
 test/**
+**.exe
+**.exe~
+**.token

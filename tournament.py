@@ -253,6 +253,7 @@ def start_recording(number):
         'description': description,
         'tournament_name': config.NAME + " Tournament",
         'stream': config.TWITCH_STREAM,
+        'channel': config.TWITCH_CHANNEL,
         'auth': config.VIDEO_SERVER_CREDENTIAL,
         'return_url': request.url_root + 'admin/video/' + str(match.number)
     }
